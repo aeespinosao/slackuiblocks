@@ -131,3 +131,44 @@ class OptionGroup(BaseModel):
         if len(value) > 100:
             raise ValueError('options should have less than 100 elements')
         return value
+    
+class TriggerActions(Enum):
+    ENTER = "on_enter_pressed"
+    CHARACTER = "on_character_entered"
+    
+class DispatchActionConfig(BaseModel):
+    trigger_actions_on: list[TriggerActions] = []
+    
+    @validator('trigger_actions_on')
+    def trigger_actions_on_validator(cls, value: list[TriggerActions]) -> list[TriggerActions]:
+        if len(value) <= 0:
+            raise ValueError('trigger_actions_on should have at least 1 element')
+        return value
+    
+class ConversationTypes(Enum):
+    IM = "im"
+    MPIM = "mipm"
+    PRIVATE = "private"
+    PUBLIC = "public"
+    
+class FilterConversarionList(BaseModel):
+    include: list[ConversationTypes] = []
+    exclude_external_shared_channels: bool = False
+    exclude_bot_users: bool = False
+    
+    @validator('include')
+    def include_validator(cls, value: list[ConversationTypes]) -> list[ConversationTypes]:
+        if len(value) <= 0:
+            raise ValueError('include should have at least 1 element')
+        return value
+    
+class InputParameter(BaseModel):
+    name: str
+    value: str
+    
+class Trigger(BaseModel):
+    url: str
+    customizable_input_parameters: list[InputParameter] = []
+    
+class Workflow(BaseModel):
+    trigger: Trigger
