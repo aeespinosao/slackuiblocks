@@ -16,6 +16,17 @@ class ElementType(Enum):
     MULTISELECTCHANNELSLIST="multi_channels_select"
     NUMBERINPUT="number_input"
     OVERFLOWMENU="overflow"
+    TEXTINPUT="text_input"
+    RADIOBUTTON="radio_buttons"
+    SELECTSTATIC="static_select"
+    SELECTEXTERNALDATA="external_select"
+    SELECTUSER="users_select"
+    SELECTCONVERSATION="conversations_select"
+    SELECTPUBLICCHANNEL="channels_select"
+    TIMEPICKER="timepicker"
+    URLINPUT="url_text_input"
+    WORKFLOWBUTTON="workflow_button"
+    
     
 class Style(Enum):
     DEFAULT="default"
@@ -125,14 +136,14 @@ class NumberInput(BaseModel):
 
 
 class OverflowMenu(BaseModel):
-    type: str = Field(ElementType.NUMBERINPUT, const=True) 
+    type: str = Field(ElementType.OVERFLOWMENU, const=True) 
     action_id: str
     options: list[Option]
     confirm: ConfirmationDialog = None
 
 
 class TextInput(BaseModel):
-    type: str = Field(ElementType.NUMBERINPUT, const=True) 
+    type: str = Field(ElementType.TEXTINPUT, const=True) 
     action_id: str
     initial_value: str = None
     multiline: bool = False
@@ -144,7 +155,7 @@ class TextInput(BaseModel):
     
     
 class RadioButton(BaseModel):
-    type: str = Field(ElementType.NUMBERINPUT, const=True) 
+    type: str = Field(ElementType.RADIOBUTTON, const=True) 
     action_id: str
     options: list[Option]
     initial_option: list[Option] = []
@@ -160,25 +171,25 @@ class SelectMenu(BaseModel):
     
 
 class SelectStatic(SelectMenu):
-    type: str = Field(ElementType.NUMBERINPUT, const=True) 
+    type: str = Field(ElementType.SELECTSTATIC, const=True) 
     options: list[Option]
     option_groups: list[OptionGroup] = []
     initial_option: Option = None
     
 
 class SelectExternalData(SelectMenu):
-    type: str = Field(ElementType.NUMBERINPUT, const=True) 
+    type: str = Field(ElementType.SELECTEXTERNALDATA, const=True) 
     initial_option: Option = None
     min_query_length: int =  3
 
 
 class SelectUser(SelectMenu):
-    type: str = Field(ElementType.NUMBERINPUT, const=True) 
+    type: str = Field(ElementType.SELECTUSER, const=True) 
     initial_user: str
     
 
 class SelectConversation(SelectMenu):
-    type: str = Field(ElementType.NUMBERINPUT, const=True) 
+    type: str = Field(ElementType.SELECTCONVERSATION, const=True) 
     initial_conversation: str
     default_to_current_conversation: bool = False
     response_url_enabled: bool = False
@@ -186,13 +197,13 @@ class SelectConversation(SelectMenu):
 
 
 class SelectPublicChannel(SelectMenu):
-    type: str = Field(ElementType.NUMBERINPUT, const=True) 
+    type: str = Field(ElementType.SELECTPUBLICCHANNEL, const=True) 
     initial_channel: str
     response_url_enabled: bool = False
     
     
 class TimePicker(BaseModel):
-    type: str = Field(ElementType.DATEPICKER, const=True)
+    type: str = Field(ElementType.TIMEPICKER, const=True)
     action_id: str
     initial_time: str = None
     confirm: ConfirmationDialog = None
@@ -202,7 +213,7 @@ class TimePicker(BaseModel):
     
     
 class UrlInput(BaseModel):
-    type: str = Field(ElementType.DATEPICKER, const=True)
+    type: str = Field(ElementType.URLINPUT, const=True)
     action_id: str
     initial_value: str = None
     dispatch_action_config: DispatchActionConfig = None
@@ -211,7 +222,7 @@ class UrlInput(BaseModel):
     
 
 class WorkflowButton(BaseModel):
-    type: str = Field(ElementType.DATEPICKER, const=True)
+    type: str = Field(ElementType.WORKFLOWBUTTON, const=True)
     text: Text
     workflow: Workflow
     style: Style = Style.DEFAULT
