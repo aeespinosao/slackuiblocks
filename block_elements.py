@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from base_elements import Text, ConfirmationDialog, Option, DispatchActionConfig, OptionGroup, FilterConversarionList, Workflow
+from composition_objects import Text, ConfirmationDialog, Option, DispatchActionConfig, OptionGroup, FilterConversarionList, Workflow
 from enum import Enum
 
 class ElementType(Enum):

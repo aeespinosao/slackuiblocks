@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, validator
-from base_elements import Text
+from composition_objects import Text
 
 from enum import Enum
 
