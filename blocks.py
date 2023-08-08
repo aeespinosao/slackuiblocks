@@ -12,10 +12,10 @@ class Type:
     INPUT = "input"
     SECTION = "section"
 
-
+# TODO: include actions
 class Context(BaseModel):
     type: str = Field(Type.CONTEXT, const=True)
-    elements: list[Text] # miss image
+    elements: list[Text] # TODO: include image
     block_id: str = None
     
     @validator('elements')
@@ -108,7 +108,7 @@ class Image(BaseModel):
 class Input(BaseModel):
     type: str = Field(Type.INPUT, const=True)
     label: str
-    element: Text # mising checkbox, radio, select, multiselect, datepicker
+    element: Text # TODO: include checkbox, radio, select, multiselect, datepicker
     dispatch_action: bool = False
     block_id: str = None
     hint: Text = None
@@ -132,7 +132,7 @@ class Section(BaseModel):
     text: Text = None
     block_id: str = None
     fields: list[Text]
-    accessory = None#need elements objects
+    accessory = None # TODO: need elements objects
     
     @validator('text')
     def text_validator(cls, value: Text, values: dict) -> Text:
