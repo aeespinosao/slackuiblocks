@@ -86,11 +86,6 @@ class Image(BaseModel):
             raise ValueError('image_url should be less than 3000 char')
         return value
     
-    @validator('image_url')
-    def image_url_validator(cls, value: str) -> str:
-        if len(value) > 2000:
-            raise ValueError('image_url should be less than 2000 char')
-        return value
     
     @validator('title')
     def title_validator(cls, value: Text) -> Text:
@@ -131,12 +126,12 @@ class Section(BaseModel):
     type: str = Field(Type.SECTION, const=True)
     text: Text = None
     block_id: str = None
-    fields: list[Text]
-    accessory = None # TODO: need elements objects
+    fields: list[Text] = None
+    accessory: dict = None # TODO: need elements objects
     
-    @validator('text')
+    """@validator('text')
     def text_validator(cls, value: Text, values: dict) -> Text:
-        if len(values.get('fields')) == 0:
+        if value and len(values.get('fields')) == 0:
             size = len(value.text)
             if size > 3000 or size < 1:
                 raise ValueError('text should be between 1 and 3000 char')
@@ -144,7 +139,7 @@ class Section(BaseModel):
     
     @validator('block_id')
     def block_id_validator(cls, value: str) -> str:
-        if len(value) > 255:
+        if value and len(value) > 255:
             raise ValueError('block_id should be less than 255 char')
         return value
     
@@ -152,14 +147,14 @@ class Section(BaseModel):
     def fields_validator(cls, value: list[Text], values: dict) -> Text:
         if values.get('text') is None:
             size = len(value)
-            if size < 1 or size > 10:
+            if value and (size < 1 or size > 10):
                 raise ValueError('fields should be less than 10 elements')
             
             for element in value:
                 if len(element.text) > 2000:
                     raise ValueError('all elements in fields should be less than than 2000 char')
                     
-        return value
+        return value"""
         
     
 class Video(BaseModel):

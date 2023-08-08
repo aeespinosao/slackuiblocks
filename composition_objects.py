@@ -1,7 +1,7 @@
 from enum import Enum
 from pydantic import BaseModel, root_validator, validator
 
-class TextType(Enum):
+class TextType(str, Enum):
     PLAIN = "plain_text"
     MARKDOWN = "mrkdwn"
 
@@ -13,6 +13,7 @@ class Text(BaseModel):
     
     @validator('text')
     def text_validator(cls, value: str) -> str:
+        print(value)
         size = len(value)
         if size < 1 or size > 3000:
             raise ValueError('text should be between 1 and 3000 chars')
@@ -25,7 +26,7 @@ class Text(BaseModel):
         return value
         
     @validator('verbatim')
-    def emoji_validator(cls, value: bool, values: dict) -> bool:
+    def verbatim_validator(cls, value: bool, values: dict) -> bool:
         if value and values.get('type') != TextType.MARKDOWN:
             raise ValueError('verbatim should be use it in markdown')
         return value
