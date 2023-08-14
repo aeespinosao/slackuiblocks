@@ -39,7 +39,8 @@ try:
     response = client.chat_postMessage(
         channel="C05LF9Z323B",
         text='message',
-        blocks=json.dumps(create_blocks())
+        blocks=json.dumps(create_blocks()),
+        
     )
 except Exception as e:
     # You will get a SlackApiError if "ok" is False
