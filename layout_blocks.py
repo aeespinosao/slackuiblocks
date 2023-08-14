@@ -1,9 +1,11 @@
 from pydantic import BaseModel, Field, validator
 from composition_objects import Text
+from block_elements import BlockElement
 
 from enum import Enum
 
 class Type:
+    ACTIONS = "actions"
     CONTEXT = "context"
     DIVIDER = "divider"
     FILE = "file"
@@ -12,7 +14,18 @@ class Type:
     INPUT = "input"
     SECTION = "section"
 
-# TODO: include actions
+
+class Actions(BaseModel):
+    type: str = Field(Type.ACTIONS, const=True)
+    elements: list[BlockElement]
+    block_id: str = None
+    
+    @validator('elements')
+    def elements_validator(cls, value: list[Text]) -> list[Text]:
+        if len(value) > 25:
+            raise ValueError('elements should be less than 25 elements')
+        return value
+    
 class Context(BaseModel):
     type: str = Field(Type.CONTEXT, const=True)
     elements: list[Text] # TODO: include image

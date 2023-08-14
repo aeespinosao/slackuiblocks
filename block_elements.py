@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from composition_objects import Text, ConfirmationDialog, Option, DispatchActionConfig, OptionGroup, FilterConversarionList, Workflow
 from enum import Enum
+from abc import ABC
 
 class ElementType(Enum):
     BUTTON="button"
@@ -33,7 +34,10 @@ class Style(Enum):
     PRIMARY="primary"
     DANGER="danger"
     
-class Button(BaseModel):
+class BlockElement(BaseModel):
+    pass
+    
+class Button(BlockElement):
     type: str = Field(ElementType.BUTTON, const=True)
     text: Text
     action_id: str
@@ -44,7 +48,7 @@ class Button(BaseModel):
     accessibility_label: str = None
     
 
-class CheckboxGroups(BaseModel):
+class CheckboxGroups(BlockElement):
     type: str = Field(ElementType.CHECKBOXES, const=True)
     action_id: str
     options: list[Option]
@@ -53,7 +57,7 @@ class CheckboxGroups(BaseModel):
     focus_on_load: bool = False
     
 
-class Datepicker(BaseModel):
+class Datepicker(BlockElement):
     type: str = Field(ElementType.DATEPICKER, const=True)
     action_id: str
     initial_date: str = None
@@ -62,7 +66,7 @@ class Datepicker(BaseModel):
     placeholder: Text = None
     
     
-class Datetimepicker(BaseModel):
+class Datetimepicker(BlockElement):
     type: str = Field(ElementType.DATETIMEPICKER, const=True)
     action_id: str
     initial_date_time: int = None
@@ -70,7 +74,7 @@ class Datetimepicker(BaseModel):
     focus_on_load: bool = False
     
     
-class EmailInput(BaseModel):
+class EmailInput(BlockElement):
     type: str = Field(ElementType.EMAILINPUT, const=True)
     action_id: str
     initial_value: str = None
@@ -79,13 +83,13 @@ class EmailInput(BaseModel):
     placeholder: Text = None
     
 
-class Image(BaseModel):
+class Image(BlockElement):
     type: str = Field(ElementType.IMAGE, const=True)
     image_url: str
     alt_text: str
     
 
-class Multiselect(BaseModel):
+class Multiselect(BlockElement):
     action_id: str
     confirm: ConfirmationDialog = None
     max_selected_items: int = 1
@@ -118,12 +122,12 @@ class MultiselectConversationList(Multiselect):
     filter: FilterConversarionList = None
 
 
-class MultiselectPublicChannels(BaseModel):
+class MultiselectPublicChannels(BlockElement):
     type: str = Field(ElementType.MULTISELECTEXTERNALDATA, const=True) 
     initial_channels: list[str] = []
 
 
-class NumberInput(BaseModel):
+class NumberInput(BlockElement):
     type: str = Field(ElementType.NUMBERINPUT, const=True) 
     is_decimal_allowed: bool
     action_id: str = None
@@ -135,14 +139,14 @@ class NumberInput(BaseModel):
     placeholder: Text = None
 
 
-class OverflowMenu(BaseModel):
+class OverflowMenu(BlockElement):
     type: str = Field(ElementType.OVERFLOWMENU, const=True) 
     action_id: str
     options: list[Option]
     confirm: ConfirmationDialog = None
 
 
-class TextInput(BaseModel):
+class TextInput(BlockElement):
     type: str = Field(ElementType.TEXTINPUT, const=True) 
     action_id: str
     initial_value: str = None
@@ -154,7 +158,7 @@ class TextInput(BaseModel):
     placeholder: Text = None
     
     
-class RadioButton(BaseModel):
+class RadioButton(BlockElement):
     type: str = Field(ElementType.RADIOBUTTON, const=True) 
     action_id: str
     options: list[Option]
@@ -163,7 +167,7 @@ class RadioButton(BaseModel):
     focus_on_load: bool = False
     
 
-class SelectMenu(BaseModel):
+class SelectMenu(BlockElement):
     action_id: str
     confirm: ConfirmationDialog = None
     focus_on_load: bool = False
@@ -202,7 +206,7 @@ class SelectPublicChannel(SelectMenu):
     response_url_enabled: bool = False
     
     
-class TimePicker(BaseModel):
+class TimePicker(BlockElement):
     type: str = Field(ElementType.TIMEPICKER, const=True)
     action_id: str
     initial_time: str = None
@@ -212,7 +216,7 @@ class TimePicker(BaseModel):
     timezone: str = None
     
     
-class UrlInput(BaseModel):
+class UrlInput(BlockElement):
     type: str = Field(ElementType.URLINPUT, const=True)
     action_id: str
     initial_value: str = None
@@ -221,7 +225,7 @@ class UrlInput(BaseModel):
     placeholder: Text = None
     
 
-class WorkflowButton(BaseModel):
+class WorkflowButton(BlockElement):
     type: str = Field(ElementType.WORKFLOWBUTTON, const=True)
     text: Text
     workflow: Workflow
