@@ -1,15 +1,13 @@
 from enum import Enum
-from pydantic import BaseModel, root_validator, validator
+from pydantic import BaseModel, root_validator, validator, Field
 
 class TextType(str, Enum):
     PLAIN = "plain_text"
     MARKDOWN = "mrkdwn"
 
 class Text(BaseModel):
-    type: TextType
+    
     text: str
-    emoji: bool = False
-    verbatim: bool = False
     
     @validator('text')
     def text_validator(cls, value: str) -> str:
@@ -19,19 +17,15 @@ class Text(BaseModel):
             raise ValueError('text should be between 1 and 3000 chars')
         return value
     
-    @validator('emoji')
-    def emoji_validator(cls, value: bool, values: dict) -> bool:
-        if value and values.get('type') != TextType.PLAIN:
-            raise ValueError('emoji should be use it in plain text')
-        return value
-        
-    @validator('verbatim')
-    def verbatim_validator(cls, value: bool, values: dict) -> bool:
-        if value and values.get('type') != TextType.MARKDOWN:
-            raise ValueError('verbatim should be use it in markdown')
-        return value
-    
+class PlainText(Text):
+    type: TextType = Field(TextType.PLAIN, const=True)
+    emoji: bool = False
 
+class MarkdownText(Text):
+    type: TextType = Field(TextType.MARKDOWN, const=True)
+    verbatim: bool = False
+
+    
 class ConfirmStyle(Enum):
     PRIMARY = "primary" 
     DANGER = "danger" 

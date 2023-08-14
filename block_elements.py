@@ -17,7 +17,7 @@ class ElementType(Enum):
     MULTISELECTCHANNELSLIST="multi_channels_select"
     NUMBERINPUT="number_input"
     OVERFLOWMENU="overflow"
-    TEXTINPUT="text_input"
+    TEXTINPUT="plain_text_input"
     RADIOBUTTON="radio_buttons"
     SELECTSTATIC="static_select"
     SELECTEXTERNALDATA="external_select"
@@ -36,8 +36,21 @@ class Style(Enum):
     
 class BlockElement(BaseModel):
     pass
+
+
+class SectionElement(ABC):
+    pass
+
+
+class ActionElement(ABC):
+    pass
+
+
+class InputElement(ABC):
+    pass
+
     
-class Button(BlockElement):
+class Button(BlockElement, SectionElement, ActionElement):
     type: str = Field(ElementType.BUTTON, const=True)
     text: Text
     action_id: str
@@ -48,7 +61,7 @@ class Button(BlockElement):
     accessibility_label: str = None
     
 
-class CheckboxGroups(BlockElement):
+class CheckboxGroups(BlockElement, SectionElement, ActionElement, InputElement):
     type: str = Field(ElementType.CHECKBOXES, const=True)
     action_id: str
     options: list[Option]
@@ -57,7 +70,7 @@ class CheckboxGroups(BlockElement):
     focus_on_load: bool = False
     
 
-class Datepicker(BlockElement):
+class Datepicker(BlockElement, SectionElement, ActionElement, InputElement):
     type: str = Field(ElementType.DATEPICKER, const=True)
     action_id: str
     initial_date: str = None
@@ -66,7 +79,7 @@ class Datepicker(BlockElement):
     placeholder: Text = None
     
     
-class Datetimepicker(BlockElement):
+class Datetimepicker(BlockElement, ActionElement, InputElement):
     type: str = Field(ElementType.DATETIMEPICKER, const=True)
     action_id: str
     initial_date_time: int = None
@@ -74,7 +87,7 @@ class Datetimepicker(BlockElement):
     focus_on_load: bool = False
     
     
-class EmailInput(BlockElement):
+class EmailInput(BlockElement, InputElement):
     type: str = Field(ElementType.EMAILINPUT, const=True)
     action_id: str
     initial_value: str = None
@@ -83,13 +96,13 @@ class EmailInput(BlockElement):
     placeholder: Text = None
     
 
-class Image(BlockElement):
+class Image(BlockElement, SectionElement):
     type: str = Field(ElementType.IMAGE, const=True)
     image_url: str
     alt_text: str
     
 
-class Multiselect(BlockElement):
+class Multiselect(BlockElement, SectionElement, InputElement):
     action_id: str
     confirm: ConfirmationDialog = None
     max_selected_items: int = 1
@@ -122,12 +135,12 @@ class MultiselectConversationList(Multiselect):
     filter: FilterConversarionList = None
 
 
-class MultiselectPublicChannels(BlockElement):
+class MultiselectPublicChannels(BlockElement, InputElement):
     type: str = Field(ElementType.MULTISELECTEXTERNALDATA, const=True) 
     initial_channels: list[str] = []
 
 
-class NumberInput(BlockElement):
+class NumberInput(BlockElement, InputElement):
     type: str = Field(ElementType.NUMBERINPUT, const=True) 
     is_decimal_allowed: bool
     action_id: str = None
@@ -139,14 +152,14 @@ class NumberInput(BlockElement):
     placeholder: Text = None
 
 
-class OverflowMenu(BlockElement):
+class OverflowMenu(BlockElement, SectionElement, ActionElement):
     type: str = Field(ElementType.OVERFLOWMENU, const=True) 
     action_id: str
     options: list[Option]
     confirm: ConfirmationDialog = None
 
 
-class TextInput(BlockElement):
+class PlainTextInput(BlockElement, InputElement):
     type: str = Field(ElementType.TEXTINPUT, const=True) 
     action_id: str
     initial_value: str = None
@@ -158,7 +171,7 @@ class TextInput(BlockElement):
     placeholder: Text = None
     
     
-class RadioButton(BlockElement):
+class RadioButton(BlockElement, SectionElement, ActionElement, InputElement):
     type: str = Field(ElementType.RADIOBUTTON, const=True) 
     action_id: str
     options: list[Option]
@@ -167,7 +180,7 @@ class RadioButton(BlockElement):
     focus_on_load: bool = False
     
 
-class SelectMenu(BlockElement):
+class SelectMenu(BlockElement, SectionElement, ActionElement, InputElement):
     action_id: str
     confirm: ConfirmationDialog = None
     focus_on_load: bool = False
@@ -206,7 +219,7 @@ class SelectPublicChannel(SelectMenu):
     response_url_enabled: bool = False
     
     
-class TimePicker(BlockElement):
+class TimePicker(BlockElement, SectionElement, ActionElement, InputElement):
     type: str = Field(ElementType.TIMEPICKER, const=True)
     action_id: str
     initial_time: str = None
@@ -216,7 +229,7 @@ class TimePicker(BlockElement):
     timezone: str = None
     
     
-class UrlInput(BlockElement):
+class UrlInput(BlockElement, InputElement):
     type: str = Field(ElementType.URLINPUT, const=True)
     action_id: str
     initial_value: str = None
@@ -225,7 +238,7 @@ class UrlInput(BlockElement):
     placeholder: Text = None
     
 
-class WorkflowButton(BlockElement):
+class WorkflowButton(BlockElement, SectionElement, ActionElement):
     type: str = Field(ElementType.WORKFLOWBUTTON, const=True)
     text: Text
     workflow: Workflow

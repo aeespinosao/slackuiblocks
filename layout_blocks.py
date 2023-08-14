@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, validator
-from composition_objects import Text
-from block_elements import BlockElement
+from composition_objects import Text, PlainText
+from block_elements import BlockElement, Image, InputElement, SectionElement
 
 from enum import Enum
 
@@ -21,18 +21,18 @@ class Actions(BaseModel):
     block_id: str = None
     
     @validator('elements')
-    def elements_validator(cls, value: list[Text]) -> list[Text]:
+    def elements_validator(cls, value: list[BlockElement]) -> list[BlockElement]:
         if len(value) > 25:
             raise ValueError('elements should be less than 25 elements')
         return value
     
 class Context(BaseModel):
     type: str = Field(Type.CONTEXT, const=True)
-    elements: list[Text] # TODO: include image
+    elements: list[Text | Image]
     block_id: str = None
     
     @validator('elements')
-    def elements_validator(cls, value: list[Text]) -> list[Text]:
+    def elements_validator(cls, value: list[Text | Image]) -> list[Text | Image]:
         if len(value) > 10:
             raise ValueError('elements should be less than 10 elements')
         return value
@@ -57,8 +57,8 @@ class Divider(BaseModel):
 
 class File(BaseModel):
     type: str = Field(Type.FILE, const=True)
+    source: str = Field('remote', const=True)
     external_id: str
-    source: str # is constant or url= Field('remote', const=True)
     block_id: str = None
     
     @validator('block_id')
@@ -70,11 +70,11 @@ class File(BaseModel):
 
 class Header(BaseModel):
     type: str = Field(Type.HEADER, const=True)
-    text: Text
+    text: PlainText
     block_id: str = None
     
     @validator('text')
-    def text_validator(cls, value: Text) -> Text:
+    def text_validator(cls, value: PlainText) -> PlainText:
         if len(value.text) > 150:
             raise ValueError('text should be less than 150 char')
         return value
@@ -90,7 +90,7 @@ class Image(BaseModel):
     type: str = Field(Type.IMAGE, const=True)
     image_url: str
     alt_text: str
-    title: Text = None
+    title: PlainText = None
     block_id: str = None
     
     @validator('image_url')
@@ -99,9 +99,14 @@ class Image(BaseModel):
             raise ValueError('image_url should be less than 3000 char')
         return value
     
+    @validator('alt_text')
+    def alt_text_validator(cls, value: str) -> str:
+        if len(value) > 2000:
+            raise ValueError('alt_text should be less than 2000 char')
+        return value
     
     @validator('title')
-    def title_validator(cls, value: Text) -> Text:
+    def title_validator(cls, value: PlainText) -> PlainText:
         if len(value.text) > 2000:
             raise ValueError('title should be less than 2000 char')
         return value
@@ -115,13 +120,19 @@ class Image(BaseModel):
 
 class Input(BaseModel):
     type: str = Field(Type.INPUT, const=True)
-    label: str
-    element: Text # TODO: include checkbox, radio, select, multiselect, datepicker
+    label: PlainText
+    element: InputElement 
     dispatch_action: bool = False
     block_id: str = None
-    hint: Text = None
+    hint: PlainText = None
     optional: bool = False
-
+    
+    @validator('label')
+    def label_validator(cls, value: PlainText) -> PlainText:
+        if len(value.text) > 2000:
+            raise ValueError('label should be less than 2000 char')
+        return value
+    
     @validator('block_id')
     def block_id_validator(cls, value: str) -> str:
         if len(value) > 255:
@@ -129,7 +140,7 @@ class Input(BaseModel):
         return value
     
     @validator('hint')
-    def hint_validator(cls, value: Text) -> Text:
+    def hint_validator(cls, value: PlainText) -> PlainText:
         if len(value.text) > 2000:
             raise ValueError('hint should be less than 2000 char')
         return value
@@ -140,14 +151,20 @@ class Section(BaseModel):
     text: Text = None
     block_id: str = None
     fields: list[Text] = None
-    accessory: dict = None # TODO: need elements objects
+    accessory: SectionElement = None
     
-    """@validator('text')
+    @validator('text')
     def text_validator(cls, value: Text, values: dict) -> Text:
-        if value and len(values.get('fields')) == 0:
-            size = len(value.text)
-            if size > 3000 or size < 1:
-                raise ValueError('text should be between 1 and 3000 char')
+        fields = values.get('fields')
+        if value is None:
+            if fields is None:
+                raise ValueError('text or fields is required')
+            elif len(fields) == 0:
+                raise ValueError('text or fields is required')
+                
+        size = len(value.text)
+        if size > 3000 or size < 1:
+            raise ValueError('text should be between 1 and 3000 char')
         return value
     
     @validator('block_id')
@@ -158,26 +175,27 @@ class Section(BaseModel):
     
     @validator('fields')
     def fields_validator(cls, value: list[Text], values: dict) -> Text:
-        if values.get('text') is None:
-            size = len(value)
-            if value and (size < 1 or size > 10):
-                raise ValueError('fields should be less than 10 elements')
-            
-            for element in value:
-                if len(element.text) > 2000:
-                    raise ValueError('all elements in fields should be less than than 2000 char')
-                    
-        return value"""
+        text = values.get('text')
+        if value is None and text is None:
+            raise ValueError('text or fields is required')
+        if len(value) == 0 and text is None:
+            raise ValueError('text or fields is required')
+        
+        for element in value:   
+            size = len(element.text)
+            if size > 3000 or size < 1:
+                raise ValueError('text should be between 1 and 3000 char')
+        return value
         
     
 class Video(BaseModel):
     alt_text: str
     author_name: str = None
     block_id: str = None
-    description: Text = None
+    description: PlainText = None
     provider_icon_url: str = None
     provider_name: str = None
-    title: Text
+    title: PlainText
     title_url: str = None
     thumbnail_url: str
     video_url: str
@@ -195,7 +213,7 @@ class Video(BaseModel):
         return value
     
     @validator('title')
-    def title_validator(cls, value: str) -> str:
-        if len(value) > 200:
+    def title_validator(cls, value: PlainText) -> PlainText:
+        if len(value.text) > 200:
             raise ValueError('title should be less than 200 char')
         return value
