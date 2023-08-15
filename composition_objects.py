@@ -31,94 +31,75 @@ class ConfirmStyle(Enum):
     DANGER = "danger" 
     
 class ConfirmationDialog(BaseModel):
-    title: Text
-    text: Text
-    confirm: Text
-    deny: Text
+    title: PlainText
+    text: PlainText
+    confirm: PlainText
+    deny: PlainText
     style: ConfirmStyle = ConfirmStyle.PRIMARY
     
     @validator('title')
-    def title_validator(cls, value: Text) -> Text:
-        if value.type != TextType.PLAIN:
-            raise ValueError('title should be plain text')
-        
+    def title_validator(cls, value: PlainText) -> PlainText:
         if len(value.text) > 100:
             raise ValueError('title should have less than 100 char')
-    
         return value
 
     @validator('text')
-    def text_validator(cls, value: Text) -> Text:
-        if value.type != TextType.PLAIN:
-            raise ValueError('text should be plain text')
-        
+    def text_validator(cls, value: PlainText) -> PlainText:
         if len(value.text) > 300:
             raise ValueError('text should have less than 300 char')
-    
         return value
 
     @validator('confirm')
-    def confirm_validator(cls, value: Text) -> Text:
-        if value.type != TextType.PLAIN:
-            raise ValueError('confirm should be plain text')
-        
+    def confirm_validator(cls, value: PlainText) -> PlainText:
         if len(value.text) > 30:
             raise ValueError('confirm should have less than 30 char')
-    
         return value
     
     @validator('deny')
-    def deny_validator(cls, value: Text) -> Text:
-        if value.type != TextType.PLAIN:
-            raise ValueError('deny should be plain text')
-        
+    def deny_validator(cls, value: PlainText) -> PlainText:
         if len(value.text) > 30:
             raise ValueError('deny should have less than 30 char')
-    
         return value
     
     
 class Option(BaseModel):
     text: Text
     value: str
-    description: Text = None
+    description: PlainText = None
     url: str = None
     
     @validator('text')
     def text_validator(cls, value: Text) -> Text:
         if len(value.text) > 75:
-            raise ValueError('text should have less than 75 char')
+            raise ValueError('text should be less than 75 char')
         return value
     
     @validator('value')
     def value_validator(cls, value: Text) -> Text:
         if len(value) > 75:
-            raise ValueError('value should have less than 75 char')
+            raise ValueError('value should be less than 75 char')
         return value
     
     @validator('description')
-    def description_validator(cls, value: Text) -> Text:
-        if value and len(value.text) > 75:
+    def description_validator(cls, value: PlainText) -> PlainText:
+        if len(value.text) > 75:
             raise ValueError('description should have less than 75 char')
         return value
     
     @validator('url')
     def url_validator(cls, value: Text) -> Text:
         if value and len(value.text) > 3000:
-            raise ValueError('url should have less than 3000 char')
+            raise ValueError('url should be less than 3000 char')
         return value
     
 class OptionGroup(BaseModel):
-    label: Text
+    label: PlainText
     options: list[Option]
     
     @validator('label')
     def label_validator(cls, value: Text) -> Text:
-        if value.type != TextType.PLAIN:
-            raise ValueError('label should be plain text')
-        
         if len(value.text) > 75:
-            raise ValueError('label should have less than 75 char')
+            raise ValueError('label should be less than 75 char')
         return value
     
     @validator('options')
@@ -137,7 +118,7 @@ class DispatchActionConfig(BaseModel):
     @validator('trigger_actions_on')
     def trigger_actions_on_validator(cls, value: list[TriggerActions]) -> list[TriggerActions]:
         if len(value) <= 0:
-            raise ValueError('trigger_actions_on should have at least 1 element')
+            raise ValueError('trigger actions on should have at least 1 element')
         return value
     
 class ConversationTypes(Enum):
