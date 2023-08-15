@@ -15,7 +15,19 @@ class Type:
     SECTION = "section"
 
 
-class Actions(BaseModel):
+class LayoutBlock(BaseModel):
+    block_id: str = None
+    
+    class Config:
+        arbitrary_types_allowed = True
+        
+    @validator('block_id')
+    def block_id_validator(cls, value: str) -> str:
+        if len(value) > 255:
+            raise ValueError('block_id should be more than 255 char')
+        return value
+    
+class Actions(LayoutBlock):
     type: str = Field(Type.ACTIONS, const=True)
     elements: list[BlockElement]
     block_id: str = None
@@ -26,7 +38,7 @@ class Actions(BaseModel):
             raise ValueError('elements should be less than 25 elements')
         return value
     
-class Context(BaseModel):
+class Context(LayoutBlock):
     type: str = Field(Type.CONTEXT, const=True)
     elements: list[Text | Image]
     block_id: str = None
@@ -44,7 +56,7 @@ class Context(BaseModel):
         return value
     
     
-class Divider(BaseModel):
+class Divider(LayoutBlock):
     type: str = Field(Type.DIVIDER, const=True)
     block_id: str = None
     
@@ -55,7 +67,7 @@ class Divider(BaseModel):
         return value
     
 
-class File(BaseModel):
+class File(LayoutBlock):
     type: str = Field(Type.FILE, const=True)
     source: str = Field('remote', const=True)
     external_id: str
@@ -68,7 +80,7 @@ class File(BaseModel):
         return value
     
 
-class Header(BaseModel):
+class Header(LayoutBlock):
     type: str = Field(Type.HEADER, const=True)
     text: PlainText
     block_id: str = None
@@ -86,7 +98,7 @@ class Header(BaseModel):
         return value
     
 
-class Image(BaseModel):
+class Image(LayoutBlock):
     type: str = Field(Type.IMAGE, const=True)
     image_url: str
     alt_text: str
@@ -118,7 +130,7 @@ class Image(BaseModel):
         return value
 
 
-class Input(BaseModel):
+class Input(LayoutBlock):
     type: str = Field(Type.INPUT, const=True)
     label: PlainText
     element: InputElement 
@@ -146,10 +158,9 @@ class Input(BaseModel):
         return value
     
 
-class Section(BaseModel):
+class Section(LayoutBlock):
     type: str = Field(Type.SECTION, const=True)
     text: Text = None
-    block_id: str = None
     fields: list[Text] = None
     accessory: SectionElement = None
     
@@ -167,12 +178,6 @@ class Section(BaseModel):
             raise ValueError('text should be between 1 and 3000 char')
         return value
     
-    @validator('block_id')
-    def block_id_validator(cls, value: str) -> str:
-        if value and len(value) > 255:
-            raise ValueError('block_id should be less than 255 char')
-        return value
-    
     @validator('fields')
     def fields_validator(cls, value: list[Text], values: dict) -> Text:
         text = values.get('text')
@@ -188,7 +193,7 @@ class Section(BaseModel):
         return value
         
     
-class Video(BaseModel):
+class Video(LayoutBlock):
     alt_text: str
     author_name: str = None
     block_id: str = None
