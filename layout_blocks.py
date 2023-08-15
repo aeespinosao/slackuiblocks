@@ -30,7 +30,6 @@ class LayoutBlock(BaseModel):
 class Actions(LayoutBlock):
     type: str = Field(Type.ACTIONS, const=True)
     elements: list[BlockElement]
-    block_id: str = None
     
     @validator('elements')
     def elements_validator(cls, value: list[BlockElement]) -> list[BlockElement]:
@@ -41,7 +40,6 @@ class Actions(LayoutBlock):
 class Context(LayoutBlock):
     type: str = Field(Type.CONTEXT, const=True)
     elements: list[Text | Image]
-    block_id: str = None
     
     @validator('elements')
     def elements_validator(cls, value: list[Text | Image]) -> list[Text | Image]:
@@ -49,41 +47,23 @@ class Context(LayoutBlock):
             raise ValueError('elements should be less than 10 elements')
         return value
     
-    @validator('block_id')
-    def block_id_validator(cls, value: str) -> str:
-        if len(value) > 255:
-            raise ValueError('block_id should be more than 255 char')
-        return value
-    
     
 class Divider(LayoutBlock):
     type: str = Field(Type.DIVIDER, const=True)
-    block_id: str = None
     
-    @validator('block_id')
-    def block_id_validator(cls, value: str) -> str:
-        if len(value) > 255:
-            raise ValueError('block_id should be more than 255 char')
-        return value
     
 
 class File(LayoutBlock):
     type: str = Field(Type.FILE, const=True)
     source: str = Field('remote', const=True)
     external_id: str
-    block_id: str = None
     
-    @validator('block_id')
-    def block_id_validator(cls, value: str) -> str:
-        if len(value) > 255:
-            raise ValueError('block_id should be more than 255 char')
-        return value
     
 
 class Header(LayoutBlock):
     type: str = Field(Type.HEADER, const=True)
     text: PlainText
-    block_id: str = None
+
     
     @validator('text')
     def text_validator(cls, value: PlainText) -> PlainText:
@@ -91,11 +71,7 @@ class Header(LayoutBlock):
             raise ValueError('text should be less than 150 char')
         return value
     
-    @validator('block_id')
-    def block_id_validator(cls, value: str) -> str:
-        if len(value) > 255:
-            raise ValueError('block_id should be more than 255 char')
-        return value
+
     
 
 class Image(LayoutBlock):
@@ -103,7 +79,7 @@ class Image(LayoutBlock):
     image_url: str
     alt_text: str
     title: PlainText = None
-    block_id: str = None
+
     
     @validator('image_url')
     def image_url_validator(cls, value: str) -> str:
@@ -123,11 +99,7 @@ class Image(LayoutBlock):
             raise ValueError('title should be less than 2000 char')
         return value
     
-    @validator('block_id')
-    def block_id_validator(cls, value: str) -> str:
-        if len(value) > 255:
-            raise ValueError('block_id should be more than 255 char')
-        return value
+
 
 
 class Input(LayoutBlock):
@@ -135,7 +107,7 @@ class Input(LayoutBlock):
     label: PlainText
     element: InputElement 
     dispatch_action: bool = False
-    block_id: str = None
+
     hint: PlainText = None
     optional: bool = False
     
@@ -145,11 +117,7 @@ class Input(LayoutBlock):
             raise ValueError('label should be less than 2000 char')
         return value
     
-    @validator('block_id')
-    def block_id_validator(cls, value: str) -> str:
-        if len(value) > 255:
-            raise ValueError('block_id should be more than 255 char')
-        return value
+
     
     @validator('hint')
     def hint_validator(cls, value: PlainText) -> PlainText:
@@ -196,7 +164,7 @@ class Section(LayoutBlock):
 class Video(LayoutBlock):
     alt_text: str
     author_name: str = None
-    block_id: str = None
+
     description: PlainText = None
     provider_icon_url: str = None
     provider_name: str = None
@@ -211,11 +179,7 @@ class Video(LayoutBlock):
             raise ValueError('author_name should be less than 50 char')
         return value
     
-    @validator('block_id')
-    def block_id_validator(cls, value: str) -> str:
-        if len(value) > 255:
-            raise ValueError('block_id should be more than 255 char')
-        return value
+
     
     @validator('title')
     def title_validator(cls, value: PlainText) -> PlainText:
