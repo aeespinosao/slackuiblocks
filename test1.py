@@ -1,6 +1,6 @@
 from slack_sdk import WebClient
 from layout_blocks import Section
-from composition_objects import Text, TextType
+from composition_objects import MarkdownText, TextType
 TOKEN="xoxb-5685149968484-5718507706929-9BrcHKfII9zIli1zkMDKIbjB"
 import json
 
@@ -13,24 +13,25 @@ def create_blocks() -> Blocks:
     blocks =  Blocks()
     blocks.blocks.append(
         Section(
-            text=Text(
-                type=TextType.MARKDOWN, 
-                text="You have a new request:\n*<fakeLink.toEmployeeProfile.com|Fred Enriquez - New device request>*"
-            )
+            text=MarkdownText(
+                text="You have a new request:\n* fakeLink.toEmployeeProfile.com*",
+                verbatim=True
+            ),
+            block_id="abc"
         )
     )
-    #blocks.blocks.append(Section(
-    #    fields=[
-    #        Text(TextType.MARKDOWN, "*Type:*\nComputer (laptop)"),
-    #        Text(TextType.MARKDOWN, "*When:*\nSubmitted Aut 10"),
-    #        Text(TextType.MARKDOWN, "*Last Update:*\nMar 10, 2015 (3 years, 5 months)"),
-    #        Text(TextType.MARKDOWN, "Reason:*\nAll vowel keys aren't working."),
-    #        Text(TextType.MARKDOWN, "*Specs:*\n\"Cheetah Pro 15\" - Fast, really fast\""),
-    #    ]
-    #))
+    blocks.blocks.append(
+        Section(
+            fields=[
+                MarkdownText(text="*Type:*\nComputer (laptop)"),
+                MarkdownText(text="*When:*\nSubmitted Aut 10"),
+                MarkdownText(text="*Last Update:*\nMar 10, 2015 (3 years, 5 months)"),
+                MarkdownText(text="Reason:*\nAll vowel keys aren't working."),
+                MarkdownText(text="*Specs:*\n\"Cheetah Pro 15\" - Fast, really fast\""),
+            ]
+        )
+    )
     result = blocks.dict(exclude_none=True).get("blocks")
-    for r in result:
-        del r['text']['emoji']
     print(json.dumps(result))
     return result
 
@@ -39,8 +40,7 @@ try:
     response = client.chat_postMessage(
         channel="C05LF9Z323B",
         text='message',
-        blocks=json.dumps(create_blocks()),
-        
+        blocks=json.dumps(create_blocks()),   
     )
 except Exception as e:
     # You will get a SlackApiError if "ok" is False
