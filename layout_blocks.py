@@ -24,7 +24,7 @@ class LayoutBlock(BaseModel):
     @validator('block_id')
     def block_id_validator(cls, value: str) -> str:
         if len(value) > 255:
-            raise ValueError('block_id should be more than 255 char')
+            raise ValueError('block_id should be less than 255 char')
         return value
     
 class Actions(LayoutBlock):

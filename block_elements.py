@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field
-from composition_objects import Text, ConfirmationDialog, Option, DispatchActionConfig, OptionGroup, FilterConversarionList, Workflow
+from pydantic import BaseModel, Field, validator
+from composition_objects import Text, PlainText, MarkdownText, ConfirmationDialog, Option, DispatchActionConfig, OptionGroup, FilterConversarionList, Workflow
 from enum import Enum
 from abc import ABC
 
@@ -30,12 +30,18 @@ class ElementType(Enum):
     
     
 class Style(Enum):
-    DEFAULT="default"
+    DEFAULT=None
     PRIMARY="primary"
     DANGER="danger"
     
 class BlockElement(BaseModel):
-    pass
+    action_id: str
+    
+    @validator('action_id')
+    def action_id_validator(cls, value: str) -> str:
+        if len(value) > 255:
+            raise ValueError('action_id should be less than 75 char')
+        return value   
 
 
 class SectionElement(ABC):
@@ -52,116 +58,232 @@ class InputElement(ABC):
     
 class Button(BlockElement, SectionElement, ActionElement):
     type: str = Field(ElementType.BUTTON, const=True)
-    text: Text
-    action_id: str
+    text: PlainText
     url: str = None
     value: str = None
-    style: Style = Style.DEFAULT
+    style: Style = Style.DEFAULT # TODO: no send when is default
     confirm: ConfirmationDialog = None
-    accessibility_label: str = None
+    accessibility_label: Text = None
     
+    @validator('text')
+    def text_validator(cls, value: PlainText) -> PlainText:
+        if len(value.text) > 75:
+            raise ValueError('text should be less than 75 char')
+        return value
+    
+    @validator('url')
+    def url_validator(cls, value: str) -> str:
+        if len(value) > 3000:
+            raise ValueError('url should be less than 3000 char')
+        return value 
+    
+    @validator('value')
+    def value_validator(cls, value: str) -> str:
+        if len(value) > 2000:
+            raise ValueError('value should be less than 2000 char')
+        return value 
+    
+    @validator('accessibility_label')
+    def accessibility_label_validator(cls, value: Text) -> Text:
+        if len(value.text) > 75:
+            raise ValueError('accessibility label should be less than 75 char')
+        return value 
 
 class CheckboxGroups(BlockElement, SectionElement, ActionElement, InputElement):
     type: str = Field(ElementType.CHECKBOXES, const=True)
-    action_id: str
     options: list[Option]
-    initial_options: list[Option] = []
+    initial_options: list[Option] = None
     confirm: ConfirmationDialog = None
     focus_on_load: bool = False
     
-
+    @validator('options')
+    def options_validator(cls, value: list[Option]) -> list[Option]:
+        if len(value) > 10:
+            raise ValueError('options should be less than 10 elements')
+        return value 
+    
+    @validator('initial_options')
+    def initial_options_validator(cls, value: list[Option]) -> list[Option]:
+        # TODO: implement validations, should be in options object
+        return value 
+    
+    
 class Datepicker(BlockElement, SectionElement, ActionElement, InputElement):
     type: str = Field(ElementType.DATEPICKER, const=True)
-    action_id: str
     initial_date: str = None
     confirm: ConfirmationDialog = None
     focus_on_load: bool = False
-    placeholder: Text = None
+    placeholder: PlainText = None
     
+    @validator('placeholder')
+    def placeholder_validator(cls, value: PlainText) -> PlainText:
+        if len(value.text) > 150:
+            raise ValueError('placeholder should be less than 150 char')
+        return value 
+    
+    @validator('initial_date')
+    def initial_date_validator(cls, value: str) -> str:
+        # TODO: validate YYYY-MM-DD format
+        return value 
     
 class Datetimepicker(BlockElement, ActionElement, InputElement):
     type: str = Field(ElementType.DATETIMEPICKER, const=True)
-    action_id: str
     initial_date_time: int = None
     confirm: ConfirmationDialog = None
     focus_on_load: bool = False
     
+    @validator('initial_date_time')
+    def initial_date_time_validator(cls, value: int) -> int:
+        from datetime import datetime
+        if len(str(value)) != 10:
+            raise ValueError('initial date time should have 10 char')
+        try:
+            _ = datetime.fromtimestamp(value)
+        except Exception:
+            raise ValueError('initial date time in bad format')
+        return value 
+    
     
 class EmailInput(BlockElement, InputElement):
     type: str = Field(ElementType.EMAILINPUT, const=True)
-    action_id: str
     initial_value: str = None
     dispatch_action_config: DispatchActionConfig = None
     focus_on_load: bool = False
-    placeholder: Text = None
+    placeholder: PlainText = None
+    
+    @validator('placeholder')
+    def placeholder_validator(cls, value: PlainText) -> PlainText:
+        if len(value.text) > 150:
+            raise ValueError('placeholder should be less than 150 char')
+        return value 
     
 
 class Image(BlockElement, SectionElement):
     type: str = Field(ElementType.IMAGE, const=True)
+    action_id: str = Field(None, const=True)
     image_url: str
     alt_text: str
     
 
 class Multiselect(BlockElement, SectionElement, InputElement):
-    action_id: str
     confirm: ConfirmationDialog = None
     max_selected_items: int = 1
     focus_on_load: bool = False
     placeholder: Text = None
     
+    @validator('max_selected_items')
+    def max_selected_items_validator(cls, value: int) -> int:
+        if value < 1:
+            raise ValueError('max selected items should be more than 1')
+        return value
+        
+    @validator('placeholder')
+    def placeholder_validator(cls, value: PlainText) -> PlainText:
+        if len(value.text) > 150:
+            raise ValueError('placeholder should be less than 150 char')
+        return value 
     
 class MultiselectStatic(Multiselect):
     type: str = Field(ElementType.MULTISELECTSTATIC, const=True)
-    options: list[Option]
-    option_groups: list[OptionGroup] = []
-    initial_options: list[Option] = []
-   
+    options: list[Option] = None
+    option_groups: list[OptionGroup] = None
+    initial_options: list[Option] = None
+    
+    @validator('options')
+    def options_validator(cls, value: list[Option], values: dict) -> list[Option]:
+        groups = values.get("option_groups")
+        if value is None and groups is None:
+            raise ValueError('should have attribute options or options groups')
+        
+        if groups is None:
+            if len(value) > 100:
+                raise ValueError('options should be less than 100 elements')
+            
+            for option in value:
+                if len(option.text) > 76:
+                    raise ValueError('each option should have less than 76 char') 
+        return value
+    
+    @validator('option_groups')
+    def option_groups_validator(cls, value: list[OptionGroup], values: dict) -> list[OptionGroup]:
+        options = values.get("option_groups")
+        if value is None and options is None:
+            raise ValueError('should have attribute options or options groups')
+        
+        if options is None:
+            if len(value) > 100:
+                raise ValueError('options should be less than 100 elements')        
+        return value
+    
+    @validator('initial_options')
+    def initial_options_validator(cls, value: list[Option]) -> list[Option]:
+        # TODO: implement validations, should be in options object or options groups
+        return value 
     
 class MultiselectExternalData(Multiselect):
     type: str = Field(ElementType.MULTISELECTEXTERNALDATA, const=True) 
     min_query_length: int = 3
-    initial_options: list[Option] = []
+    initial_options: list[Option] = None
+
+    @validator('min_query_length')
+    def min_query_length_validator(cls, value: int) -> int:
+        if value < 1:
+            raise ValueError('min query lenght should be more than 1')        
+        return value 
+    
+    @validator('initial_options')
+    def initial_options_validator(cls, value: list[Option]) -> list[Option]:
+        # TODO: implement validations, should be in options object or options groups
+        return value 
 
 
 class MultiselectUserList(Multiselect):
-    type: str = Field(ElementType.MULTISELECTEXTERNALDATA, const=True) 
-    initial_users: list[str] = []
+    type: str = Field(ElementType.MULTISELECTUSERLIST, const=True) 
+    initial_users: list[str] = None
     
     
 class MultiselectConversationList(Multiselect):
     type: str = Field(ElementType.MULTISELECTEXTERNALDATA, const=True) 
-    initial_conversations: list[str] = []
+    initial_conversations: list[str] = None
     default_to_current_conversation: bool = False
     filter: FilterConversarionList = None
 
 
 class MultiselectPublicChannels(BlockElement, InputElement):
     type: str = Field(ElementType.MULTISELECTEXTERNALDATA, const=True) 
-    initial_channels: list[str] = []
+    initial_channels: list[str] = None
 
 
 class NumberInput(BlockElement, InputElement):
     type: str = Field(ElementType.NUMBERINPUT, const=True) 
     is_decimal_allowed: bool
-    action_id: str = None
     initial_value: str = None
     min_value: str = None
     max_value: str = None
     dispatch_action_config: DispatchActionConfig = None
     focus_on_load: bool = False
-    placeholder: Text = None
-
+    placeholder: PlainText = None
+    
+    @validator('placeholder')
+    def placeholder_validator(cls, value: PlainText) -> PlainText:
+        if len(value.text) > 150:
+            raise ValueError('placeholder should be less than 150 char')
+        return value
+    
 
 class OverflowMenu(BlockElement, SectionElement, ActionElement):
     type: str = Field(ElementType.OVERFLOWMENU, const=True) 
-    action_id: str
     options: list[Option]
     confirm: ConfirmationDialog = None
 
+    @validator('options')
+    def options_validator(cls, value: list[Option]) -> list[Option]:
+        if len(value) > 5:
+            raise ValueError('options should be less than 5 elements')
+        return value
 
 class PlainTextInput(BlockElement, InputElement):
     type: str = Field(ElementType.TEXTINPUT, const=True) 
-    action_id: str
     initial_value: str = None
     multiline: bool = False
     min_length: int = None
@@ -170,18 +292,32 @@ class PlainTextInput(BlockElement, InputElement):
     focus_on_load: bool = False
     placeholder: Text = None
     
+    @validator('min_length')
+    def min_length_validator(cls, value: int) -> int:
+        if value > 3000:
+            raise ValueError('min length should be less than 3000')
+        return value
     
 class RadioButton(BlockElement, SectionElement, ActionElement, InputElement):
     type: str = Field(ElementType.RADIOBUTTON, const=True) 
-    action_id: str
     options: list[Option]
-    initial_option: list[Option] = []
+    initial_option: list[Option] = None
     confirm: ConfirmationDialog = None
     focus_on_load: bool = False
     
+    @validator('options')
+    def options_validator(cls, value: list[Option]) -> list[Option]:
+        if len(value) > 10:
+            raise ValueError('options should be less than 10 elements')
+        return value 
+    
+    @validator('initial_option')
+    def initial_options_validator(cls, value: list[Option]) -> list[Option]:
+        # TODO: implement validations, should be in options object or options groups
+        return value 
+    
 
 class SelectMenu(BlockElement, SectionElement, ActionElement, InputElement):
-    action_id: str
     confirm: ConfirmationDialog = None
     focus_on_load: bool = False
     placeholder: Text = None
@@ -193,11 +329,53 @@ class SelectStatic(SelectMenu):
     option_groups: list[OptionGroup] = []
     initial_option: Option = None
     
+    @validator('options')
+    def options_validator(cls, value: list[Option], values: dict) -> list[Option]:
+        groups = values.get("option_groups")
+        if value is None and groups is None:
+            raise ValueError('should have attribute options or options groups')
+        
+        if groups is None:
+            if len(value) > 100:
+                raise ValueError('options should be less than 100 elements')
+            
+            for option in value:
+                if len(option.text) > 76:
+                    raise ValueError('each option should have less than 76 char') 
+        return value
+    
+    @validator('option_groups')
+    def option_groups_validator(cls, value: list[OptionGroup], values: dict) -> list[OptionGroup]:
+        options = values.get("option_groups")
+        if value is None and options is None:
+            raise ValueError('should have attribute options or options groups')
+        
+        if options is None:
+            if len(value) > 100:
+                raise ValueError('options should be less than 100 elements')        
+        return value
+    
+    @validator('initial_option')
+    def initial_option_validator(cls, value: list[Option]) -> list[Option]:
+        # TODO: implement validations, should be in options object or options groups
+        return value 
+    
 
 class SelectExternalData(SelectMenu):
     type: str = Field(ElementType.SELECTEXTERNALDATA, const=True) 
     initial_option: Option = None
     min_query_length: int =  3
+    
+    @validator('min_query_length')
+    def min_query_length_validator(cls, value: int) -> int:
+        if value < 1:
+            raise ValueError('min query lenght should be more than 1')        
+        return value 
+    
+    @validator('initial_option')
+    def initial_option_validator(cls, value: list[Option]) -> list[Option]:
+        # TODO: implement validations, should be in options object or options groups
+        return value 
 
 
 class SelectUser(SelectMenu):
@@ -221,26 +399,48 @@ class SelectPublicChannel(SelectMenu):
     
 class TimePicker(BlockElement, SectionElement, ActionElement, InputElement):
     type: str = Field(ElementType.TIMEPICKER, const=True)
-    action_id: str
     initial_time: str = None
     confirm: ConfirmationDialog = None
     focus_on_load: bool = False
-    placeholder: Text = None
+    placeholder: PlainText = None
     timezone: str = None
+    
+    @validator('placeholder')
+    def placeholder_validator(cls, value: PlainText) -> PlainText:
+        if len(value.text) > 150:
+            raise ValueError('placeholder should be less than 150 char')
+        return value
     
     
 class UrlInput(BlockElement, InputElement):
     type: str = Field(ElementType.URLINPUT, const=True)
-    action_id: str
     initial_value: str = None
     dispatch_action_config: DispatchActionConfig = None
     focus_on_load: bool = False
-    placeholder: Text = None
+    placeholder: PlainText = None
+    
+    @validator('placeholder')
+    def placeholder_validator(cls, value: PlainText) -> PlainText:
+        if len(value.text) > 150:
+            raise ValueError('placeholder should be less than 150 char')
+        return value
     
 
 class WorkflowButton(BlockElement, SectionElement, ActionElement):
     type: str = Field(ElementType.WORKFLOWBUTTON, const=True)
-    text: Text
+    text: PlainText
     workflow: Workflow
     style: Style = Style.DEFAULT
     accessibility_label: str = None
+    
+    @validator('text')
+    def text_validator(cls, value: PlainText) -> PlainText:
+        if len(value.text) > 75:
+            raise ValueError('text should be less than 75 char')
+        return value
+
+    @validator('accessibility_label')
+    def accessibility_label_validator(cls, value: str) -> str:
+        if len(value) > 75:
+            raise ValueError('accessibility label should be less than 75 char')
+        return value
