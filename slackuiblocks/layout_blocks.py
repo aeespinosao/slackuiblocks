@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, validator
-from composition_objects import Text, PlainText
-from block_elements import BlockElement, Image, InputElement, SectionElement
+from .composition_objects import Text, PlainText
+from .block_elements import BlockElement, Image, InputElement, SectionElement
 
 from enum import Enum
 

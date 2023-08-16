@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, validator
-from composition_objects import Text, PlainText, MarkdownText, ConfirmationDialog, Option, DispatchActionConfig, OptionGroup, FilterConversarionList, Workflow
+from .composition_objects import Text, PlainText, MarkdownText, ConfirmationDialog, Option, DispatchActionConfig, OptionGroup, FilterConversarionList, Workflow
 from enum import Enum
 from abc import ABC
 

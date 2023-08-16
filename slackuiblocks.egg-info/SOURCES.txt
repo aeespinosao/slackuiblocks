@@ -1,0 +1,11 @@
+README.md
+setup.py
+slackuiblocks/__init__.py
+slackuiblocks/block_elements.py
+slackuiblocks/composition_objects.py
+slackuiblocks/layout_blocks.py
+slackuiblocks.egg-info/PKG-INFO
+slackuiblocks.egg-info/SOURCES.txt
+slackuiblocks.egg-info/dependency_links.txt
+slackuiblocks.egg-info/requires.txt
+slackuiblocks.egg-info/top_level.txt
