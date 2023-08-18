@@ -242,14 +242,14 @@ class MultiselectUserList(Multiselect):
     
     
 class MultiselectConversationList(Multiselect):
-    type: ElementType = Field(ElementType.MULTISELECTEXTERNALDATA, const=True) 
+    type: ElementType = Field(ElementType.MULTISELECTCONVERSATIONLIST, const=True) 
     initial_conversations: list[str] = None
     default_to_current_conversation: bool = False
     filter: FilterConversarionList = None
 
 
 class MultiselectPublicChannels(Multiselect):
-    type: ElementType = Field(ElementType.MULTISELECTEXTERNALDATA, const=True) 
+    type: ElementType = Field(ElementType.MULTISELECTCHANNELSLIST, const=True) 
     initial_channels: list[str] = None
 
 
