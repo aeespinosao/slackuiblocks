@@ -199,7 +199,7 @@ class MultiselectStatic(Multiselect):
                 raise ValueError('options should be less than 100 elements')
             
             for option in value:
-                if len(option.text) > 76:
+                if len(option.text.text) > 76:
                     raise ValueError('each option should have less than 76 char') 
         return value
     

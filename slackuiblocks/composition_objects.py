@@ -74,7 +74,7 @@ class Option(BaseModel):
         return value
     
     @validator('value')
-    def value_validator(cls, value: Text) -> Text:
+    def value_validator(cls, value: str) -> str:
         if len(value) > 75:
             raise ValueError('value should be less than 75 char')
         return value
