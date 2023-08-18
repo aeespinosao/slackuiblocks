@@ -4,7 +4,7 @@ from slackuiblocks.layout_blocks import Section
 from slack_sdk import WebClient
 import json
 
-TOKEN="xoxb-5685149968484-5718507706929-9BrcHKfII9zIli1zkMDKIbjB"
+TOKEN=""
 
 
 class Blocks(BaseModel):
