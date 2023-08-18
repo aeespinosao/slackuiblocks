@@ -248,7 +248,7 @@ class MultiselectConversationList(Multiselect):
     filter: FilterConversarionList = None
 
 
-class MultiselectPublicChannels(BlockElement, InputElement):
+class MultiselectPublicChannels(SectionElement, InputElement):
     type: ElementType = Field(ElementType.MULTISELECTEXTERNALDATA, const=True) 
     initial_channels: list[str] = None
 
