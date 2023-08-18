@@ -1,9 +1,9 @@
 from pydantic import BaseModel, Field, validator
 from .composition_objects import Text, PlainText, MarkdownText, ConfirmationDialog, Option, DispatchActionConfig, OptionGroup, FilterConversarionList, Workflow
-from enum import Enum
+from enum import StrEnum
 from abc import ABC
 
-class ElementType(Enum):
+class ElementType(StrEnum):
     BUTTON="button"
     CHECKBOXES="checkboxes"
     DATEPICKER="datepicker"
@@ -29,13 +29,12 @@ class ElementType(Enum):
     WORKFLOWBUTTON="workflow_button"
     
     
-class Style(Enum):
-    DEFAULT=None
+class Style(StrEnum):
     PRIMARY="primary"
     DANGER="danger"
     
 class BlockElement(BaseModel):
-    action_id: str
+    action_id: str = None
     
     @validator('action_id')
     def action_id_validator(cls, value: str) -> str:
@@ -57,11 +56,11 @@ class InputElement(ABC):
 
     
 class Button(BlockElement, SectionElement, ActionElement):
-    type: str = Field(ElementType.BUTTON, const=True)
+    type: ElementType = Field(ElementType.BUTTON, const=True)
     text: PlainText
     url: str = None
     value: str = None
-    style: Style = Style.DEFAULT # TODO: no send when is default
+    style: Style = None # TODO: no send when is default
     confirm: ConfirmationDialog = None
     accessibility_label: Text = None
     
@@ -90,7 +89,7 @@ class Button(BlockElement, SectionElement, ActionElement):
         return value 
 
 class CheckboxGroups(BlockElement, SectionElement, ActionElement, InputElement):
-    type: str = Field(ElementType.CHECKBOXES, const=True)
+    type: ElementType = Field(ElementType.CHECKBOXES, const=True)
     options: list[Option]
     initial_options: list[Option] = None
     confirm: ConfirmationDialog = None
@@ -109,7 +108,7 @@ class CheckboxGroups(BlockElement, SectionElement, ActionElement, InputElement):
     
     
 class Datepicker(BlockElement, SectionElement, ActionElement, InputElement):
-    type: str = Field(ElementType.DATEPICKER, const=True)
+    type: ElementType = Field(ElementType.DATEPICKER, const=True)
     initial_date: str = None
     confirm: ConfirmationDialog = None
     focus_on_load: bool = False
@@ -127,7 +126,7 @@ class Datepicker(BlockElement, SectionElement, ActionElement, InputElement):
         return value 
     
 class Datetimepicker(BlockElement, ActionElement, InputElement):
-    type: str = Field(ElementType.DATETIMEPICKER, const=True)
+    type: ElementType = Field(ElementType.DATETIMEPICKER, const=True)
     initial_date_time: int = None
     confirm: ConfirmationDialog = None
     focus_on_load: bool = False
@@ -145,7 +144,7 @@ class Datetimepicker(BlockElement, ActionElement, InputElement):
     
     
 class EmailInput(BlockElement, InputElement):
-    type: str = Field(ElementType.EMAILINPUT, const=True)
+    type: ElementType = Field(ElementType.EMAILINPUT, const=True)
     initial_value: str = None
     dispatch_action_config: DispatchActionConfig = None
     focus_on_load: bool = False
@@ -159,7 +158,7 @@ class EmailInput(BlockElement, InputElement):
     
 
 class Image(BlockElement, SectionElement):
-    type: str = Field(ElementType.IMAGE, const=True)
+    type: ElementType = Field(ElementType.IMAGE, const=True)
     action_id: str = Field(None, const=True)
     image_url: str
     alt_text: str
@@ -184,7 +183,7 @@ class Multiselect(BlockElement, SectionElement, InputElement):
         return value 
     
 class MultiselectStatic(Multiselect):
-    type: str = Field(ElementType.MULTISELECTSTATIC, const=True)
+    type: ElementType = Field(ElementType.MULTISELECTSTATIC, const=True)
     options: list[Option] = None
     option_groups: list[OptionGroup] = None
     initial_options: list[Option] = None
@@ -221,7 +220,7 @@ class MultiselectStatic(Multiselect):
         return value 
     
 class MultiselectExternalData(Multiselect):
-    type: str = Field(ElementType.MULTISELECTEXTERNALDATA, const=True) 
+    type: ElementType = Field(ElementType.MULTISELECTEXTERNALDATA, const=True) 
     min_query_length: int = 3
     initial_options: list[Option] = None
 
@@ -238,24 +237,24 @@ class MultiselectExternalData(Multiselect):
 
 
 class MultiselectUserList(Multiselect):
-    type: str = Field(ElementType.MULTISELECTUSERLIST, const=True) 
+    type: ElementType = Field(ElementType.MULTISELECTUSERLIST, const=True) 
     initial_users: list[str] = None
     
     
 class MultiselectConversationList(Multiselect):
-    type: str = Field(ElementType.MULTISELECTEXTERNALDATA, const=True) 
+    type: ElementType = Field(ElementType.MULTISELECTEXTERNALDATA, const=True) 
     initial_conversations: list[str] = None
     default_to_current_conversation: bool = False
     filter: FilterConversarionList = None
 
 
 class MultiselectPublicChannels(BlockElement, InputElement):
-    type: str = Field(ElementType.MULTISELECTEXTERNALDATA, const=True) 
+    type: ElementType = Field(ElementType.MULTISELECTEXTERNALDATA, const=True) 
     initial_channels: list[str] = None
 
 
 class NumberInput(BlockElement, InputElement):
-    type: str = Field(ElementType.NUMBERINPUT, const=True) 
+    type: ElementType = Field(ElementType.NUMBERINPUT, const=True) 
     is_decimal_allowed: bool
     initial_value: str = None
     min_value: str = None
@@ -272,7 +271,7 @@ class NumberInput(BlockElement, InputElement):
     
 
 class OverflowMenu(BlockElement, SectionElement, ActionElement):
-    type: str = Field(ElementType.OVERFLOWMENU, const=True) 
+    type: ElementType = Field(ElementType.OVERFLOWMENU, const=True) 
     options: list[Option]
     confirm: ConfirmationDialog = None
 
@@ -283,7 +282,7 @@ class OverflowMenu(BlockElement, SectionElement, ActionElement):
         return value
 
 class PlainTextInput(BlockElement, InputElement):
-    type: str = Field(ElementType.TEXTINPUT, const=True) 
+    type: ElementType = Field(ElementType.TEXTINPUT, const=True) 
     initial_value: str = None
     multiline: bool = False
     min_length: int = None
@@ -299,7 +298,7 @@ class PlainTextInput(BlockElement, InputElement):
         return value
     
 class RadioButton(BlockElement, SectionElement, ActionElement, InputElement):
-    type: str = Field(ElementType.RADIOBUTTON, const=True) 
+    type: ElementType = Field(ElementType.RADIOBUTTON, const=True) 
     options: list[Option]
     initial_option: list[Option] = None
     confirm: ConfirmationDialog = None
@@ -324,7 +323,7 @@ class SelectMenu(BlockElement, SectionElement, ActionElement, InputElement):
     
 
 class SelectStatic(SelectMenu):
-    type: str = Field(ElementType.SELECTSTATIC, const=True) 
+    type: ElementType = Field(ElementType.SELECTSTATIC, const=True) 
     options: list[Option]
     option_groups: list[OptionGroup] = []
     initial_option: Option = None
@@ -362,7 +361,7 @@ class SelectStatic(SelectMenu):
     
 
 class SelectExternalData(SelectMenu):
-    type: str = Field(ElementType.SELECTEXTERNALDATA, const=True) 
+    type: ElementType = Field(ElementType.SELECTEXTERNALDATA, const=True) 
     initial_option: Option = None
     min_query_length: int =  3
     
@@ -379,12 +378,12 @@ class SelectExternalData(SelectMenu):
 
 
 class SelectUser(SelectMenu):
-    type: str = Field(ElementType.SELECTUSER, const=True) 
+    type: ElementType = Field(ElementType.SELECTUSER, const=True) 
     initial_user: str
     
 
 class SelectConversation(SelectMenu):
-    type: str = Field(ElementType.SELECTCONVERSATION, const=True) 
+    type: ElementType = Field(ElementType.SELECTCONVERSATION, const=True) 
     initial_conversation: str
     default_to_current_conversation: bool = False
     response_url_enabled: bool = False
@@ -392,13 +391,13 @@ class SelectConversation(SelectMenu):
 
 
 class SelectPublicChannel(SelectMenu):
-    type: str = Field(ElementType.SELECTPUBLICCHANNEL, const=True) 
+    type: ElementType = Field(ElementType.SELECTPUBLICCHANNEL, const=True) 
     initial_channel: str
     response_url_enabled: bool = False
     
     
 class TimePicker(BlockElement, SectionElement, ActionElement, InputElement):
-    type: str = Field(ElementType.TIMEPICKER, const=True)
+    type: ElementType = Field(ElementType.TIMEPICKER, const=True)
     initial_time: str = None
     confirm: ConfirmationDialog = None
     focus_on_load: bool = False
@@ -413,7 +412,7 @@ class TimePicker(BlockElement, SectionElement, ActionElement, InputElement):
     
     
 class UrlInput(BlockElement, InputElement):
-    type: str = Field(ElementType.URLINPUT, const=True)
+    type: ElementType = Field(ElementType.URLINPUT, const=True)
     initial_value: str = None
     dispatch_action_config: DispatchActionConfig = None
     focus_on_load: bool = False
@@ -427,10 +426,10 @@ class UrlInput(BlockElement, InputElement):
     
 
 class WorkflowButton(BlockElement, SectionElement, ActionElement):
-    type: str = Field(ElementType.WORKFLOWBUTTON, const=True)
+    type: ElementType = Field(ElementType.WORKFLOWBUTTON, const=True)
     text: PlainText
     workflow: Workflow
-    style: Style = Style.DEFAULT
+    style: Style = None
     accessibility_label: str = None
     
     @validator('text')

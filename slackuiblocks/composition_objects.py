@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 from pydantic import BaseModel, root_validator, validator, Field
 
-class TextType(str, Enum):
+class TextType(StrEnum):
     PLAIN = "plain_text"
     MARKDOWN = "mrkdwn"
 
@@ -11,7 +11,6 @@ class Text(BaseModel):
     
     @validator('text')
     def text_validator(cls, value: str) -> str:
-        print(value)
         size = len(value)
         if size < 1 or size > 3000:
             raise ValueError('text should be between 1 and 3000 chars')
@@ -26,7 +25,7 @@ class MarkdownText(Text):
     verbatim: bool = False
 
     
-class ConfirmStyle(Enum):
+class ConfirmStyle(StrEnum):
     PRIMARY = "primary" 
     DANGER = "danger" 
     
@@ -108,7 +107,7 @@ class OptionGroup(BaseModel):
             raise ValueError('options should have less than 100 elements')
         return value
     
-class TriggerActions(Enum):
+class TriggerActions(StrEnum):
     ENTER = "on_enter_pressed"
     CHARACTER = "on_character_entered"
     
@@ -121,7 +120,7 @@ class DispatchActionConfig(BaseModel):
             raise ValueError('trigger actions on should have at least 1 element')
         return value
     
-class ConversationTypes(Enum):
+class ConversationTypes(StrEnum):
     IM = "im"
     MPIM = "mipm"
     PRIVATE = "private"

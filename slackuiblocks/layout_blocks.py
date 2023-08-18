@@ -2,9 +2,9 @@ from pydantic import BaseModel, Field, validator
 from .composition_objects import Text, PlainText
 from .block_elements import BlockElement, Image, InputElement, SectionElement
 
-from enum import Enum
+from enum import StrEnum
 
-class Type:
+class Type(StrEnum):
     ACTIONS = "actions"
     CONTEXT = "context"
     DIVIDER = "divider"
@@ -28,7 +28,7 @@ class LayoutBlock(BaseModel):
         return value
     
 class Actions(LayoutBlock):
-    type: str = Field(Type.ACTIONS, const=True)
+    type: Type = Field(Type.ACTIONS, const=True)
     elements: list[BlockElement]
     
     @validator('elements')
@@ -38,7 +38,7 @@ class Actions(LayoutBlock):
         return value
     
 class Context(LayoutBlock):
-    type: str = Field(Type.CONTEXT, const=True)
+    type: Type = Field(Type.CONTEXT, const=True)
     elements: list[Text | Image]
     
     @validator('elements')
@@ -49,19 +49,19 @@ class Context(LayoutBlock):
     
     
 class Divider(LayoutBlock):
-    type: str = Field(Type.DIVIDER, const=True)
+    type: Type = Field(Type.DIVIDER, const=True)
     
     
 
 class File(LayoutBlock):
-    type: str = Field(Type.FILE, const=True)
+    type: Type = Field(Type.FILE, const=True)
     source: str = Field('remote', const=True)
     external_id: str
     
     
 
 class Header(LayoutBlock):
-    type: str = Field(Type.HEADER, const=True)
+    type: Type = Field(Type.HEADER, const=True)
     text: PlainText
 
     
@@ -75,7 +75,7 @@ class Header(LayoutBlock):
     
 
 class Image(LayoutBlock):
-    type: str = Field(Type.IMAGE, const=True)
+    type: Type = Field(Type.IMAGE, const=True)
     image_url: str
     alt_text: str
     title: PlainText = None
@@ -103,7 +103,7 @@ class Image(LayoutBlock):
 
 
 class Input(LayoutBlock):
-    type: str = Field(Type.INPUT, const=True)
+    type: Type = Field(Type.INPUT, const=True)
     label: PlainText
     element: InputElement 
     dispatch_action: bool = False
@@ -127,7 +127,7 @@ class Input(LayoutBlock):
     
 
 class Section(LayoutBlock):
-    type: str = Field(Type.SECTION, const=True)
+    type: Type = Field(Type.SECTION, const=True)
     text: Text = None
     fields: list[Text] = None
     accessory: SectionElement = None
