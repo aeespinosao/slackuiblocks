@@ -168,7 +168,7 @@ class Multiselect(BlockElement, SectionElement, InputElement):
     confirm: ConfirmationDialog = None
     max_selected_items: int = 1
     focus_on_load: bool = False
-    placeholder: Text = None
+    placeholder: PlainText = None
     
     @validator('max_selected_items')
     def max_selected_items_validator(cls, value: int) -> int:
@@ -289,7 +289,7 @@ class PlainTextInput(BlockElement, InputElement):
     max_length: int  = None
     dispatch_action_config: DispatchActionConfig = None
     focus_on_load: bool = False
-    placeholder: Text = None
+    placeholder: PlainText = None
     
     @validator('min_length')
     def min_length_validator(cls, value: int) -> int:
@@ -319,7 +319,7 @@ class RadioButton(BlockElement, SectionElement, ActionElement, InputElement):
 class SelectMenu(BlockElement, SectionElement, ActionElement, InputElement):
     confirm: ConfirmationDialog = None
     focus_on_load: bool = False
-    placeholder: Text = None
+    placeholder: PlainTextInput = None
     
 
 class SelectStatic(SelectMenu):
