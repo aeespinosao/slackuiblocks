@@ -319,7 +319,7 @@ class RadioButton(BlockElement, SectionElement, ActionElement, InputElement):
 class SelectMenu(BlockElement, SectionElement, ActionElement, InputElement):
     confirm: ConfirmationDialog = None
     focus_on_load: bool = False
-    placeholder: PlainTextInput = None
+    placeholder: PlainText = None
     
 
 class SelectStatic(SelectMenu):
