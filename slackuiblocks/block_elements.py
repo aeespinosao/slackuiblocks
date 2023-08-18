@@ -325,7 +325,7 @@ class SelectMenu(BlockElement, SectionElement, ActionElement, InputElement):
 class SelectStatic(SelectMenu):
     type: ElementType = Field(ElementType.SELECTSTATIC, const=True) 
     options: list[Option]
-    option_groups: list[OptionGroup] = []
+    option_groups: list[OptionGroup] = None
     initial_option: Option = None
     
     @validator('options')
@@ -379,12 +379,12 @@ class SelectExternalData(SelectMenu):
 
 class SelectUser(SelectMenu):
     type: ElementType = Field(ElementType.SELECTUSER, const=True) 
-    initial_user: str
+    initial_user: str = None
     
 
 class SelectConversation(SelectMenu):
     type: ElementType = Field(ElementType.SELECTCONVERSATION, const=True) 
-    initial_conversation: str
+    initial_conversation: str = None
     default_to_current_conversation: bool = False
     response_url_enabled: bool = False
     filter: FilterConversarionList = None
@@ -392,7 +392,7 @@ class SelectConversation(SelectMenu):
 
 class SelectPublicChannel(SelectMenu):
     type: ElementType = Field(ElementType.SELECTPUBLICCHANNEL, const=True) 
-    initial_channel: str
+    initial_channel: str = None
     response_url_enabled: bool = False
     
     
