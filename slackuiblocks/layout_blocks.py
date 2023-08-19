@@ -13,6 +13,7 @@ class Type(StrEnum):
     IMAGE = "image"
     INPUT = "input"
     SECTION = "section"
+    VIDEO = "video"
 
 
 class LayoutBlock(BaseModel):
@@ -162,9 +163,9 @@ class Section(LayoutBlock):
         
     
 class Video(LayoutBlock):
+    type: Type = Field(Type.VIDEO, const=True)
     alt_text: str
     author_name: str = None
-
     description: PlainText = None
     provider_icon_url: str = None
     provider_name: str = None
