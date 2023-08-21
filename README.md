@@ -65,12 +65,12 @@ For more complex interactions, you can create menus, input fields, and more usin
 
 ## Documentation
 
-For detailed usage instructions, examples, and a comprehensive list of available UI elements, refer to the [Documentation](https://github.com/yourusername/slackuiblocks/blob/main/docs/README.md).
+For detailed usage instructions, examples, and a comprehensive list of available UI elements, refer to the [Documentation](https://github.com/aeespinosao/slackuiblocks/blob/main/docs/README.md).
 
 ## Contributing
 
-Contributions are welcome! To contribute to `slackuiblocks`, follow the guidelines outlined in [CONTRIBUTING.md](https://github.com/yourusername/slackuiblocks/blob/main/CONTRIBUTING.md).
+Contributions are welcome! To contribute to `slackuiblocks`, follow the guidelines outlined in [CONTRIBUTING.md](https://github.com/aeespinosao/slackuiblocks/blob/main/CONTRIBUTING.md).
 
 ## License
 
-This project is licensed under the [MIT License](https://github.com/yourusername/slackuiblocks/blob/main/LICENSE).
+This project is licensed under the [MIT License](https://github.com/aeespinosao/slackuiblocks/blob/main/LICENSE).
