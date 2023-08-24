@@ -51,5 +51,7 @@ from .layout_blocks import (
     Video
 )
 from .views import (
-    Blocks
+    Blocks,
+    ModalView,
+    HomeView
 )

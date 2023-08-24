@@ -1,19 +1,14 @@
 from .block_elements import UrlInputExamples
-from pydantic import BaseModel
-from slackuiblocks.layout_blocks import Section
+from slackuiblocks import Blocks
 from slack_sdk import WebClient
 
-TOKEN = "xoxb-5685149968484-5718507706929-9BrcHKfII9zIli1zkMDKIbjB"
-
-
-class Blocks(BaseModel):
-    blocks: list[Section] = []
+TOKEN = ""
 
 
 def create_blocks():
     blocks = Blocks()
     blocks.blocks.append(UrlInputExamples())
-    return blocks.dict(exclude_none=True).get("blocks")
+    return blocks.to_dict()
 
 
 def main():
