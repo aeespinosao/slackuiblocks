@@ -1,9 +1,10 @@
 from .layout_blocks import LayoutBlock
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, validator
 from .composition_objects import PlainText
 
 
 from enum import StrEnum
+from typing import Literal
 
 
 class Type(StrEnum):
@@ -11,8 +12,11 @@ class Type(StrEnum):
     HOME = "home"
 
 
+from typing import List
+
+
 class Views(BaseModel):
-    blocks: list[LayoutBlock] = []
+    blocks: List[LayoutBlock] = []
 
     class Config:
         arbitrary_types_allowed = True
@@ -26,11 +30,11 @@ class Views(BaseModel):
 
 class Blocks(Views):
     def to_dict(self):
-        return self.dict(exclude_none=True).get("blocks")
+        return self.model_dump(exclude_none=True).get("blocks")
 
 
 class ModalView(Views):
-    type: Type = Field(Type.MODAL, const=True)
+    type: Literal[Type.MODAL] = Type.MODAL
     title: PlainText
     blocks: list[LayoutBlock]
     close: PlainText = None
@@ -77,7 +81,7 @@ class ModalView(Views):
 
 
 class HomeView(Views):
-    type: Type = Field(Type.HOME, const=True)
+    type: Literal[Type.HOME] = Type.HOME
     blocks: list[LayoutBlock]
     private_metadata: str = None
     callback_id: str = None

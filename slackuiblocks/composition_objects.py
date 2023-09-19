@@ -1,5 +1,6 @@
 from enum import StrEnum
-from pydantic import BaseModel, validator, Field
+from pydantic import BaseModel, validator
+from typing import Literal
 
 
 class TextType(StrEnum):
@@ -19,12 +20,12 @@ class Text(BaseModel):
 
 
 class PlainText(Text):
-    type: TextType = Field(TextType.PLAIN, const=True)
+    type: Literal[TextType.PLAIN] = TextType.PLAIN
     emoji: bool = False
 
 
 class MarkdownText(Text):
-    type: TextType = Field(TextType.MARKDOWN, const=True)
+    type: Literal[TextType.MARKDOWN] = TextType.MARKDOWN
     verbatim: bool = False
 
 

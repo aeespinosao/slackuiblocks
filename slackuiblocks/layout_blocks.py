@@ -1,8 +1,9 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, validator
 from .composition_objects import Text, PlainText
 from .block_elements import BlockElement, Image, InputElement, SectionElement
 
 from enum import StrEnum
+from typing import Literal
 
 
 class Type(StrEnum):
@@ -31,7 +32,7 @@ class LayoutBlock(BaseModel):
 
 
 class Actions(LayoutBlock):
-    type: Type = Field(Type.ACTIONS, const=True)
+    type: Literal[Type.ACTIONS] = Type.ACTIONS
     elements: list[BlockElement]
 
     @validator("elements")
@@ -42,7 +43,7 @@ class Actions(LayoutBlock):
 
 
 class Context(LayoutBlock):
-    type: Type = Field(Type.CONTEXT, const=True)
+    type: Literal[Type.CONTEXT] = Type.CONTEXT
     elements: list[Text | Image]
 
     @validator("elements")
@@ -53,17 +54,17 @@ class Context(LayoutBlock):
 
 
 class Divider(LayoutBlock):
-    type: Type = Field(Type.DIVIDER, const=True)
+    type: Literal[Type.DIVIDER] = Type.DIVIDER
 
 
 class File(LayoutBlock):
-    type: Type = Field(Type.FILE, const=True)
-    source: str = Field("remote", const=True)
+    type: Literal[Type.FILE] = Type.FILE
+    source: str = Literal["remote"]
     external_id: str
 
 
 class Header(LayoutBlock):
-    type: Type = Field(Type.HEADER, const=True)
+    type: Literal[Type.HEADER] = Type.HEADER
     text: PlainText
 
     @validator("text")
@@ -74,7 +75,7 @@ class Header(LayoutBlock):
 
 
 class Image(LayoutBlock):
-    type: Type = Field(Type.IMAGE, const=True)
+    type: Literal[Type.IMAGE] = Type.IMAGE
     image_url: str
     alt_text: str
     title: PlainText = None
@@ -99,7 +100,7 @@ class Image(LayoutBlock):
 
 
 class Input(LayoutBlock):
-    type: Type = Field(Type.INPUT, const=True)
+    type: Literal[Type.INPUT] = Type.INPUT
     label: PlainText
     element: InputElement
     dispatch_action: bool = False
@@ -121,7 +122,7 @@ class Input(LayoutBlock):
 
 
 class Section(LayoutBlock):
-    type: Type = Field(Type.SECTION, const=True)
+    type: Literal[Type.SECTION] = Type.SECTION
     text: Text = None
     fields: list[Text] = None
     accessory: SectionElement = None
@@ -156,7 +157,7 @@ class Section(LayoutBlock):
 
 
 class Video(LayoutBlock):
-    type: Type = Field(Type.VIDEO, const=True)
+    type: Literal[Type.VIDEO] = Type.VIDEO
     alt_text: str
     author_name: str = None
     description: PlainText = None

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, validator
 from .composition_objects import (
     Text,
     PlainText,
@@ -11,6 +11,7 @@ from .composition_objects import (
 )
 from enum import StrEnum
 from abc import ABC
+from typing import Literal
 
 
 class ElementType(StrEnum):
@@ -67,7 +68,7 @@ class InputElement(ABC):
 
 
 class Button(BlockElement, SectionElement, ActionElement):
-    type: ElementType = Field(ElementType.BUTTON, const=True)
+    type: Literal[ElementType.BUTTON] = ElementType.BUTTON
     text: PlainText
     url: str = None
     value: str = None
@@ -101,7 +102,7 @@ class Button(BlockElement, SectionElement, ActionElement):
 
 
 class CheckboxGroups(BlockElement, SectionElement, ActionElement, InputElement):
-    type: ElementType = Field(ElementType.CHECKBOXES, const=True)
+    type: Literal[ElementType.CHECKBOXES] = ElementType.CHECKBOXES
     options: list[Option]
     initial_options: list[Option] = None
     confirm: ConfirmationDialog = None
@@ -120,7 +121,7 @@ class CheckboxGroups(BlockElement, SectionElement, ActionElement, InputElement):
 
 
 class Datepicker(BlockElement, SectionElement, ActionElement, InputElement):
-    type: ElementType = Field(ElementType.DATEPICKER, const=True)
+    type: Literal[ElementType.DATEPICKER] = ElementType.DATEPICKER
     initial_date: str = None
     confirm: ConfirmationDialog = None
     focus_on_load: bool = False
@@ -139,7 +140,7 @@ class Datepicker(BlockElement, SectionElement, ActionElement, InputElement):
 
 
 class Datetimepicker(BlockElement, ActionElement, InputElement):
-    type: ElementType = Field(ElementType.DATETIMEPICKER, const=True)
+    type: Literal[ElementType.DATETIMEPICKER] = ElementType.DATETIMEPICKER
     initial_date_time: int = None
     confirm: ConfirmationDialog = None
     focus_on_load: bool = False
@@ -158,7 +159,7 @@ class Datetimepicker(BlockElement, ActionElement, InputElement):
 
 
 class EmailInput(BlockElement, InputElement):
-    type: ElementType = Field(ElementType.EMAILINPUT, const=True)
+    type: Literal[ElementType.EMAILINPUT] = ElementType.EMAILINPUT
     initial_value: str = None
     dispatch_action_config: DispatchActionConfig = None
     focus_on_load: bool = False
@@ -172,8 +173,8 @@ class EmailInput(BlockElement, InputElement):
 
 
 class Image(BlockElement, SectionElement):
-    type: ElementType = Field(ElementType.IMAGE, const=True)
-    action_id: str = Field(None, const=True)
+    type: Literal[ElementType.IMAGE] = ElementType.IMAGE
+    action_id: str = Literal[None]
     image_url: str
     alt_text: str
 
@@ -198,7 +199,7 @@ class Multiselect(BlockElement, SectionElement, InputElement):
 
 
 class MultiselectStatic(Multiselect):
-    type: ElementType = Field(ElementType.MULTISELECTSTATIC, const=True)
+    type: Literal[ElementType.MULTISELECTSTATIC] = ElementType.MULTISELECTSTATIC
     options: list[Option] = None
     option_groups: list[OptionGroup] = None
     initial_options: list[Option] = None
@@ -238,7 +239,9 @@ class MultiselectStatic(Multiselect):
 
 
 class MultiselectExternalData(Multiselect):
-    type: ElementType = Field(ElementType.MULTISELECTEXTERNALDATA, const=True)
+    type: Literal[
+        ElementType.MULTISELECTEXTERNALDATA
+    ] = ElementType.MULTISELECTEXTERNALDATA
     min_query_length: int = 3
     initial_options: list[Option] = None
 
@@ -255,24 +258,28 @@ class MultiselectExternalData(Multiselect):
 
 
 class MultiselectUserList(Multiselect):
-    type: ElementType = Field(ElementType.MULTISELECTUSERLIST, const=True)
+    type: Literal[ElementType.MULTISELECTUSERLIST] = ElementType.MULTISELECTUSERLIST
     initial_users: list[str] = None
 
 
 class MultiselectConversationList(Multiselect):
-    type: ElementType = Field(ElementType.MULTISELECTCONVERSATIONLIST, const=True)
+    type: Literal[
+        ElementType.MULTISELECTCONVERSATIONLIST
+    ] = ElementType.MULTISELECTCONVERSATIONLIST
     initial_conversations: list[str] = None
     default_to_current_conversation: bool = False
     filter: FilterConversarionList = None
 
 
 class MultiselectPublicChannels(Multiselect):
-    type: ElementType = Field(ElementType.MULTISELECTCHANNELSLIST, const=True)
+    type: Literal[
+        ElementType.MULTISELECTCHANNELSLIST
+    ] = ElementType.MULTISELECTCHANNELSLIST
     initial_channels: list[str] = None
 
 
 class NumberInput(BlockElement, InputElement):
-    type: ElementType = Field(ElementType.NUMBERINPUT, const=True)
+    type: Literal[ElementType.NUMBERINPUT] = ElementType.NUMBERINPUT
     is_decimal_allowed: bool
     initial_value: str = None
     min_value: str = None
@@ -289,7 +296,7 @@ class NumberInput(BlockElement, InputElement):
 
 
 class OverflowMenu(BlockElement, SectionElement, ActionElement):
-    type: ElementType = Field(ElementType.OVERFLOWMENU, const=True)
+    type: Literal[ElementType.OVERFLOWMENU] = ElementType.OVERFLOWMENU
     options: list[Option]
     confirm: ConfirmationDialog = None
 
@@ -301,7 +308,7 @@ class OverflowMenu(BlockElement, SectionElement, ActionElement):
 
 
 class PlainTextInput(BlockElement, InputElement):
-    type: ElementType = Field(ElementType.TEXTINPUT, const=True)
+    type: Literal[ElementType.TEXTINPUT] = ElementType.TEXTINPUT
     initial_value: str = None
     multiline: bool = False
     min_length: int = None
@@ -318,7 +325,7 @@ class PlainTextInput(BlockElement, InputElement):
 
 
 class RadioButton(BlockElement, SectionElement, ActionElement, InputElement):
-    type: ElementType = Field(ElementType.RADIOBUTTON, const=True)
+    type: Literal[ElementType.RADIOBUTTON] = ElementType.RADIOBUTTON
     options: list[Option]
     initial_option: list[Option] = None
     confirm: ConfirmationDialog = None
@@ -343,7 +350,7 @@ class SelectMenu(BlockElement, SectionElement, ActionElement, InputElement):
 
 
 class SelectStatic(SelectMenu):
-    type: ElementType = Field(ElementType.SELECTSTATIC, const=True)
+    type: Literal[ElementType.SELECTSTATIC] = ElementType.SELECTSTATIC
     options: list[Option]
     option_groups: list[OptionGroup] = None
     initial_option: Option = None
@@ -383,7 +390,7 @@ class SelectStatic(SelectMenu):
 
 
 class SelectExternalData(SelectMenu):
-    type: ElementType = Field(ElementType.SELECTEXTERNALDATA, const=True)
+    type: Literal[ElementType.SELECTEXTERNALDATA] = ElementType.SELECTEXTERNALDATA
     initial_option: Option = None
     min_query_length: int = 3
 
@@ -400,12 +407,12 @@ class SelectExternalData(SelectMenu):
 
 
 class SelectUser(SelectMenu):
-    type: ElementType = Field(ElementType.SELECTUSER, const=True)
+    type: Literal[ElementType.SELECTUSER] = ElementType.SELECTUSER
     initial_user: str = None
 
 
 class SelectConversation(SelectMenu):
-    type: ElementType = Field(ElementType.SELECTCONVERSATION, const=True)
+    type: Literal[ElementType.SELECTCONVERSATION] = ElementType.SELECTCONVERSATION
     initial_conversation: str = None
     default_to_current_conversation: bool = False
     response_url_enabled: bool = False
@@ -413,13 +420,13 @@ class SelectConversation(SelectMenu):
 
 
 class SelectPublicChannel(SelectMenu):
-    type: ElementType = Field(ElementType.SELECTPUBLICCHANNEL, const=True)
+    type: Literal[ElementType.SELECTPUBLICCHANNEL] = ElementType.SELECTPUBLICCHANNEL
     initial_channel: str = None
     response_url_enabled: bool = False
 
 
 class TimePicker(BlockElement, SectionElement, ActionElement, InputElement):
-    type: ElementType = Field(ElementType.TIMEPICKER, const=True)
+    type: Literal[ElementType.TIMEPICKER] = ElementType.TIMEPICKER
     initial_time: str = None
     confirm: ConfirmationDialog = None
     focus_on_load: bool = False
@@ -434,7 +441,7 @@ class TimePicker(BlockElement, SectionElement, ActionElement, InputElement):
 
 
 class UrlInput(BlockElement, InputElement):
-    type: ElementType = Field(ElementType.URLINPUT, const=True)
+    type: Literal[ElementType.URLINPUT] = ElementType.URLINPUT
     initial_value: str = None
     dispatch_action_config: DispatchActionConfig = None
     focus_on_load: bool = False
@@ -448,7 +455,7 @@ class UrlInput(BlockElement, InputElement):
 
 
 class WorkflowButton(BlockElement, SectionElement, ActionElement):
-    type: ElementType = Field(ElementType.WORKFLOWBUTTON, const=True)
+    type: Literal[ElementType.WORKFLOWBUTTON] = ElementType.WORKFLOWBUTTON
     text: PlainText
     workflow: Workflow
     style: Style = None

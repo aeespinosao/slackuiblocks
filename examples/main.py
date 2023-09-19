@@ -2,12 +2,13 @@ from .block_elements import UrlInputExamples
 from slackuiblocks import Blocks
 from slack_sdk import WebClient
 
-TOKEN = ""
+TOKEN = "xoxb-5685149968484-5718507706929-d1Dx7sldxzzxGVsBlPAKT7QY"
 
 
 def create_blocks():
     blocks = Blocks()
     blocks.blocks.append(UrlInputExamples())
+    breakpoint()
     return blocks.to_dict()
 
 
